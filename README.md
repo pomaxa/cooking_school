@@ -310,21 +310,37 @@ pm2 save
 - `./pm2.sh production` - запустить в production режиме
 
 2. Настройте Nginx как reverse proxy:
-```nginx
-server {
-    listen 80;
-    server_name yourdomain.com;
 
-    location / {
-        proxy_pass http://localhost:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-    }
-}
+Готовая production конфигурация находится в `nginx.conf.example`
+
+```bash
+# Установить Nginx
+sudo apt install nginx  # Ubuntu/Debian
+
+# Скопировать конфигурацию
+sudo cp nginx.conf.example /etc/nginx/sites-available/cooking-school
+
+# Отредактировать под ваш домен
+sudo nano /etc/nginx/sites-available/cooking-school
+
+# Активировать конфигурацию
+sudo ln -s /etc/nginx/sites-available/cooking-school /etc/nginx/sites-enabled/
+
+# Проверить и перезапустить
+sudo nginx -t
+sudo systemctl restart nginx
 ```
+
+Подробная инструкция: [NGINX-SETUP.md](./NGINX-SETUP.md)
+
+**Конфигурация включает:**
+- ✅ HTTPS с SSL/TLS
+- ✅ HTTP → HTTPS редирект
+- ✅ Security headers
+- ✅ Rate limiting
+- ✅ Gzip compression
+- ✅ Static file caching
+- ✅ WebSocket support
 
 ## 📝 Customization
 
