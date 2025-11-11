@@ -165,6 +165,14 @@ let bookings = [
 
 // API Endpoints
 
+// Configuration endpoint for frontend
+app.get('/config', (req, res) => {
+    res.json({
+        apiUrl: process.env.API_BASE_URL || '/api',
+        stripePublicKey: process.env.STRIPE_PUBLISHABLE_KEY || ''
+    });
+});
+
 // Admin Authentication
 app.post('/api/admin/login', async (req, res) => {
     try {

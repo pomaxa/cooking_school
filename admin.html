@@ -671,7 +671,20 @@
     <div id="notification" class="notification"></div>
 
     <script>
-        const API_URL = 'http://localhost:3001/api';
+        let API_URL;
+
+        // Load configuration from server
+        async function loadConfig() {
+            try {
+                const response = await fetch('/config');
+                const config = await response.json();
+                API_URL = window.location.origin + config.apiUrl;
+                return true;
+            } catch (error) {
+                console.error('Error loading configuration:', error);
+                return false;
+            }
+        }
 
         // Check authentication on page load
         async function checkAuth() {
@@ -718,6 +731,12 @@
 
         // Загрузить классы при загрузке страницы
         window.addEventListener('DOMContentLoaded', async () => {
+            const configLoaded = await loadConfig();
+            if (!configLoaded) {
+                alert('Error loading configuration. Please refresh the page.');
+                return;
+            }
+
             const authenticated = await checkAuth();
             if (authenticated) {
                 loadClasses();

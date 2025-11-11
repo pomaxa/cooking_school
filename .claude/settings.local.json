@@ -13,7 +13,11 @@
       "Bash(node migrate.js:*)",
       "Bash(xargs kill)",
       "Bash(node migrate_payment_types.js:*)",
-      "Bash(node -e:*)"
+      "Bash(node -e:*)",
+      "Bash(chmod:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git log:*)"
     ],
     "deny": [],
     "ask": []

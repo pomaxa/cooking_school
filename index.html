@@ -762,17 +762,34 @@
     </button>
 
     <script>
-        // Configuration
-        const API_URL = 'http://localhost:3001/api';
-        const STRIPE_PUBLIC_KEY = 'pk_test_51SSCqzFU50ZLRbPfBQhmwSwXIuxvLQZMRY1frZV6tlKShIukKv6qZWGec2AmIe3yiHtY71xwAempm8GfDoWTJ4CF00nmyGShJh';
-
-        // Initialize Stripe
-        const stripe = Stripe(STRIPE_PUBLIC_KEY);
-        const elements = stripe.elements();
+        // Configuration - will be loaded from server
+        let API_URL;
+        let STRIPE_PUBLIC_KEY;
+        let stripe;
+        let elements;
         let cardElement;
         let selectedClass = null;
         let classes = [];
         let clientSecret = null;
+
+        // Load configuration from server
+        async function loadConfig() {
+            try {
+                const response = await fetch('/config');
+                const config = await response.json();
+                API_URL = window.location.origin + config.apiUrl;
+                STRIPE_PUBLIC_KEY = config.stripePublicKey;
+
+                // Initialize Stripe with fetched key
+                stripe = Stripe(STRIPE_PUBLIC_KEY);
+                elements = stripe.elements();
+
+                return true;
+            } catch (error) {
+                console.error('Error loading configuration:', error);
+                return false;
+            }
+        }
 
         // Load classes from API
         async function loadClasses() {
@@ -1169,8 +1186,15 @@
             renderClasses();
         });
 
-        // Initialize app
-        loadClasses();
+        // Initialize app - load config first, then classes
+        (async function init() {
+            const configLoaded = await loadConfig();
+            if (configLoaded) {
+                loadClasses();
+            } else {
+                document.getElementById('loadingMessage').innerHTML = '<p style="color: red;">Error: Could not load configuration. Please refresh the page.</p>';
+            }
+        })();
     </script>
 </body>
 </html>

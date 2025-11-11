@@ -159,13 +159,44 @@
     </div>
 
     <script>
-        const API_URL = 'http://localhost:3001/api';
+        let API_URL;
+
+        // Load configuration from server
+        async function loadConfig() {
+            try {
+                const response = await fetch('/config');
+                const config = await response.json();
+                API_URL = window.location.origin + config.apiUrl;
+                return true;
+            } catch (error) {
+                console.error('Error loading configuration:', error);
+                return false;
+            }
+        }
+
         const form = document.getElementById('loginForm');
         const loginButton = document.getElementById('loginButton');
         const errorMessage = document.getElementById('errorMessage');
 
+        // Initialize on page load
+        (async function init() {
+            const configLoaded = await loadConfig();
+            if (!configLoaded) {
+                errorMessage.textContent = 'Error loading configuration. Please refresh the page.';
+                errorMessage.style.display = 'block';
+                loginButton.disabled = true;
+            }
+        })();
+
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            // Check if config is loaded
+            if (!API_URL) {
+                errorMessage.textContent = 'Configuration not loaded. Please refresh the page.';
+                errorMessage.style.display = 'block';
+                return;
+            }
 
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
