@@ -11,6 +11,9 @@ const { classesDb, bookingsDb } = require('./database');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust proxy when behind Nginx/load balancer
+app.set('trust proxy', 1);
+
 // Middleware
 app.use(cors({
     origin: process.env.FRONTEND_URL || 'http://localhost:3001',
@@ -27,7 +30,9 @@ app.use(session({
     cookie: {
         secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+        sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'lax',
+        path: '/'
     }
 }));
 
@@ -197,7 +202,14 @@ app.post('/api/admin/login', async (req, res) => {
         req.session.isAdmin = true;
         req.session.username = username;
 
-        res.json({ success: true, message: 'Logged in successfully' });
+        // Save session before responding (important for production)
+        req.session.save((err) => {
+            if (err) {
+                console.error('Session save error:', err);
+                return res.status(500).json({ error: 'Failed to create session' });
+            }
+            res.json({ success: true, message: 'Logged in successfully' });
+        });
     } catch (error) {
         console.error('Login error:', error);
         res.status(500).json({ error: 'Login failed' });
@@ -214,6 +226,15 @@ app.post('/api/admin/logout', (req, res) => {
 });
 
 app.get('/api/admin/check', (req, res) => {
+    // Debug logging for session issues
+    if (process.env.NODE_ENV === 'development') {
+        console.log('Session check:', {
+            hasSession: !!req.session,
+            isAdmin: req.session?.isAdmin,
+            sessionID: req.sessionID
+        });
+    }
+
     if (req.session && req.session.isAdmin) {
         res.json({ authenticated: true, username: req.session.username });
     } else {
