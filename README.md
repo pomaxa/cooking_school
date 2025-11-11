@@ -287,10 +287,27 @@ heroku config:set STRIPE_PUBLISHABLE_KEY=pk_live_...
 1. Установите PM2 для управления процессом:
 ```bash
 npm install -g pm2
-pm2 start server.js
+
+# Запуск с помощью npm scripts
+npm run pm2:start
+
+# Или с помощью shell скрипта
+./pm2.sh start
+
+# Настройка автозапуска при старте системы
 pm2 startup
 pm2 save
 ```
+
+Для подробной информации о PM2 смотрите [PM2-GUIDE.md](./PM2-GUIDE.md)
+
+**Быстрые PM2 команды:**
+- `npm run pm2:start` - запустить
+- `npm run pm2:stop` - остановить
+- `npm run pm2:restart` - перезапустить
+- `npm run pm2:logs` - просмотр логов
+- `npm run pm2:status` - статус процессов
+- `./pm2.sh production` - запустить в production режиме
 
 2. Настройте Nginx как reverse proxy:
 ```nginx
