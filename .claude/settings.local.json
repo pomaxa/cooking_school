@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install)",
+      "Bash(npm start)",
+      "Bash(lsof:*)",
+      "Bash(PORT=3001 npm start)",
+      "Bash(curl:*)",
+      "Bash(open:*)",
+      "Bash(python3:*)",
+      "Bash(kill:*)",
+      "Bash(npm install:*)",
+      "Bash(node migrate.js:*)",
+      "Bash(xargs kill)",
+      "Bash(node migrate_payment_types.js:*)",
+      "Bash(node -e:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
