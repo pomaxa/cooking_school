@@ -386,6 +386,12 @@
                     <div class="payment-type-options">
                         <label class="radio-option">
                             <input type="radio" name="paymentType" value="full" checked onchange="updateBookingSummary()">
+                            <div class="radio-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                                    <line x1="1" y1="10" x2="23" y2="10"/>
+                                </svg>
+                            </div>
                             <span>
                                 <strong data-i18n="payment_full">Полная оплата (100%)</strong>
                                 <small data-i18n="payment_full_desc">Оплатите полную стоимость сейчас</small>
@@ -393,6 +399,13 @@
                         </label>
                         <label class="radio-option">
                             <input type="radio" name="paymentType" value="partial" onchange="updateBookingSummary()">
+                            <div class="radio-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="M12 6v6l4 2"/>
+                                    <path d="M16 16l-4-4"/>
+                                </svg>
+                            </div>
                             <span>
                                 <strong data-i18n="payment_partial">Частичная оплата (10%)</strong>
                                 <small data-i18n="payment_partial_desc">Резервация места - оплатите 10% сейчас</small>
