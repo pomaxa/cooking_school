@@ -270,7 +270,7 @@ app.get('/api/classes/:id', async (req, res) => {
 // Создать новый класс (Admin)
 app.post('/api/classes', requireAuth, async (req, res) => {
     try {
-        const { title, description, date, time, duration, price, capacity, instructor, languages } = req.body;
+        const { title, description, date, time, duration, price, capacity, instructor, languages, audienceType } = req.body;
 
         // Валидация
         if (!title || !date || !time || !price || !capacity) {
@@ -287,7 +287,8 @@ app.post('/api/classes', requireAuth, async (req, res) => {
             time,
             duration: duration || '',
             price: parseFloat(price),
-            capacity: parseInt(capacity)
+            capacity: parseInt(capacity),
+            audienceType: audienceType || 'mixed'
         });
 
         // Получить созданный класс
@@ -315,7 +316,7 @@ app.put('/api/classes/:id', requireAuth, async (req, res) => {
             return res.status(404).json({ error: 'Class not found' });
         }
 
-        const { title, description, date, time, duration, price, capacity, instructor, languages } = req.body;
+        const { title, description, date, time, duration, price, capacity, instructor, languages, audienceType } = req.body;
 
         // Проверить capacity
         if (capacity !== undefined) {
@@ -338,7 +339,8 @@ app.put('/api/classes/:id', requireAuth, async (req, res) => {
             time: time !== undefined ? time : classItem.time,
             duration: duration !== undefined ? duration : classItem.duration,
             price: price !== undefined ? parseFloat(price) : classItem.price,
-            capacity: capacity !== undefined ? parseInt(capacity) : classItem.capacity
+            capacity: capacity !== undefined ? parseInt(capacity) : classItem.capacity,
+            audienceType: audienceType !== undefined ? audienceType : classItem.audienceType
         });
 
         // Получить обновленный класс
@@ -549,8 +551,8 @@ app.get('/api/bookings', requireAuth, async (req, res) => {
     }
 });
 
-// Получить бронирование по email (Admin)
-app.get('/api/bookings/email/:email', requireAuth, async (req, res) => {
+// Получить бронирование по email (Public)
+app.get('/api/bookings/email/:email', async (req, res) => {
     try {
         const userBookings = await bookingsDb.getByEmail(req.params.email);
         res.json(userBookings);

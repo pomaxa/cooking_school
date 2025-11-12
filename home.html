@@ -394,6 +394,203 @@
             cursor: not-allowed;
         }
 
+        /* My Bookings Timeline Styles */
+        .mybookings-timeline {
+            position: relative;
+            padding: var(--space-4) 0;
+        }
+
+        .mybookings-item {
+            position: relative;
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: var(--space-6);
+            margin-bottom: var(--space-8);
+            opacity: 0;
+            animation: fadeInUp 0.4s ease-out forwards;
+        }
+
+        .mybookings-item:nth-child(1) { animation-delay: 0.1s; }
+        .mybookings-item:nth-child(2) { animation-delay: 0.2s; }
+        .mybookings-item:nth-child(3) { animation-delay: 0.3s; }
+        .mybookings-item:nth-child(4) { animation-delay: 0.4s; }
+        .mybookings-item:nth-child(5) { animation-delay: 0.5s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .mybookings-date-column {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            padding-right: var(--space-4);
+        }
+
+        .mybookings-date {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-primary-600);
+            text-align: right;
+            margin-bottom: var(--space-2);
+        }
+
+        .mybookings-time {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-tertiary);
+            text-align: right;
+        }
+
+        .mybookings-line {
+            position: absolute;
+            right: -2px;
+            top: 24px;
+            bottom: -32px;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--color-primary-300), var(--color-border-light));
+        }
+
+        .mybookings-item:last-child .mybookings-line {
+            display: none;
+        }
+
+        .mybookings-dot {
+            position: absolute;
+            right: -6px;
+            top: 8px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--color-primary-600);
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px var(--color-primary-200);
+        }
+
+        .mybookings-content {
+            background: var(--color-bg-primary);
+            border: 1px solid var(--color-border-light);
+            border-radius: var(--radius-xl);
+            padding: var(--space-5);
+            transition: all var(--transition-base);
+        }
+
+        .mybookings-content:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .mybookings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: var(--space-3);
+            margin-bottom: var(--space-4);
+        }
+
+        .mybookings-title {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+            margin: 0;
+            flex: 1;
+        }
+
+        .mybookings-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-2) var(--space-4);
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            white-space: nowrap;
+        }
+
+        .mybookings-badge.confirmed {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--color-success);
+        }
+
+        .mybookings-badge.cancelled {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--color-error);
+        }
+
+        .mybookings-details {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+        }
+
+        .mybookings-detail-row {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        .mybookings-detail-row svg {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
+
+        .mybookings-detail-row strong {
+            color: var(--color-text-primary);
+            font-weight: var(--font-weight-semibold);
+        }
+
+        .mybookings-price-info {
+            margin-top: var(--space-4);
+            padding-top: var(--space-4);
+            border-top: 1px solid var(--color-border-light);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+        }
+
+        .mybookings-price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: var(--font-size-sm);
+        }
+
+        .mybookings-price-row.total {
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-primary-600);
+        }
+
+        @media (max-width: 768px) {
+            .mybookings-item {
+                grid-template-columns: 80px 1fr;
+                gap: var(--space-4);
+                margin-bottom: var(--space-6);
+            }
+
+            .mybookings-date {
+                font-size: var(--font-size-base);
+            }
+
+            .mybookings-title {
+                font-size: var(--font-size-base);
+            }
+
+            .mybookings-content {
+                padding: var(--space-4);
+            }
+        }
+
         /* Modal Overrides - Ensure visibility */
         .modal-backdrop {
             position: fixed !important;
@@ -570,6 +767,59 @@
 
                     <div id="successMessage" style="display: none;"></div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- My Bookings Modal -->
+    <div class="modal-backdrop" id="myBookingsModal" style="display: none;" onclick="if(event.target === this) closeMyBookingsModal();" role="dialog" aria-modal="true" aria-labelledby="myBookingsTitle">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="myBookingsTitle" data-i18n="mybookings_modal_title">Мои бронирования</h2>
+                <button class="modal-close" onclick="closeMyBookingsModal()" aria-label="Close my bookings dialog">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="modal-body" id="myBookingsContent">
+                <!-- Email form if not saved -->
+                <div id="emailFormContainer" style="display: none;">
+                    <div class="form-group">
+                        <label class="form-label form-label-required" for="bookingsEmail" data-i18n="mybookings_enter_email_placeholder">Введите ваш email</label>
+                        <input class="form-input" type="email" id="bookingsEmail" required placeholder="your@email.com">
+                    </div>
+                    <button class="btn btn-primary btn-block" onclick="loadBookings()" data-i18n="mybookings_load_btn">Загрузить</button>
+                </div>
+
+                <!-- Loading state -->
+                <div id="bookingsLoading" style="display: none;">
+                    <div class="loading-container">
+                        <div class="loading-text">Загрузка бронирований...</div>
+                    </div>
+                </div>
+
+                <!-- Timeline content -->
+                <div id="bookingsTimeline" class="mybookings-timeline" style="display: none;"></div>
+
+                <!-- Empty state -->
+                <div id="bookingsEmpty" style="display: none; text-align: center; padding: 3rem;">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin: 0 auto 1rem; opacity: 0.3;">
+                        <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+                        <line x1="16" x2="16" y1="2" y2="6"/>
+                        <line x1="8" x2="8" y1="2" y2="6"/>
+                        <line x1="3" x2="21" y1="10" y2="10"/>
+                    </svg>
+                    <p style="color: var(--color-text-secondary);" data-i18n="mybookings_empty">У вас пока нет бронирований</p>
+                </div>
+
+                <!-- Error state -->
+                <div id="bookingsError" style="display: none; text-align: center; padding: 3rem;">
+                    <p style="color: var(--color-error); margin-bottom: 1rem;">Ошибка загрузки бронирований</p>
+                    <button class="btn btn-outline" onclick="loadBookings()">Попробовать снова</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1047,6 +1297,10 @@
         }
 
         async function showMyBookings() {
+            // Open modal
+            document.getElementById('myBookingsModal').style.display = 'flex';
+
+            // Get saved email from localStorage
             let savedEmail = '';
             const savedData = localStorage.getItem('customerData');
             if (savedData) {
@@ -1058,35 +1312,174 @@
                 }
             }
 
-            const email = prompt(t('mybookings_enter_email'), savedEmail);
-            if (!email) return;
+            // Show email form if no saved email
+            if (!savedEmail) {
+                document.getElementById('emailFormContainer').style.display = 'block';
+                document.getElementById('bookingsLoading').style.display = 'none';
+                document.getElementById('bookingsTimeline').style.display = 'none';
+                document.getElementById('bookingsEmpty').style.display = 'none';
+                document.getElementById('bookingsError').style.display = 'none';
+            } else {
+                // Auto-load bookings if email is saved
+                document.getElementById('bookingsEmail').value = savedEmail;
+                await loadBookings();
+            }
+        }
+
+        function closeMyBookingsModal() {
+            document.getElementById('myBookingsModal').style.display = 'none';
+            // Reset modal state
+            document.getElementById('emailFormContainer').style.display = 'none';
+            document.getElementById('bookingsLoading').style.display = 'none';
+            document.getElementById('bookingsTimeline').style.display = 'none';
+            document.getElementById('bookingsEmpty').style.display = 'none';
+            document.getElementById('bookingsError').style.display = 'none';
+        }
+
+        async function loadBookings() {
+            const email = document.getElementById('bookingsEmail').value.trim();
+            if (!email) {
+                alert('Введите email');
+                return;
+            }
+
+            // Show loading state
+            document.getElementById('emailFormContainer').style.display = 'none';
+            document.getElementById('bookingsLoading').style.display = 'block';
+            document.getElementById('bookingsTimeline').style.display = 'none';
+            document.getElementById('bookingsEmpty').style.display = 'none';
+            document.getElementById('bookingsError').style.display = 'none';
 
             try {
-                const response = await fetch(`${API_URL}/bookings/email/${encodeURIComponent(email)}`);
-                if (!response.ok) {
+                // Fetch bookings
+                const bookingsResponse = await fetch(`${API_URL}/bookings/email/${encodeURIComponent(email)}`);
+                if (!bookingsResponse.ok) {
                     throw new Error('Failed to load bookings');
                 }
+                const bookings = await bookingsResponse.json();
 
-                const bookings = await response.json();
-
-                if (bookings.length === 0) {
-                    alert(t('mybookings_none'));
-                    return;
+                // Fetch all classes to get date/time info
+                const classesResponse = await fetch(`${API_URL}/classes`);
+                if (!classesResponse.ok) {
+                    throw new Error('Failed to load classes');
                 }
+                const classesData = await classesResponse.json();
 
-                let message = t('mybookings_title') + ':\n\n';
-                bookings.forEach(b => {
-                    message += `#${b.id} - ${b.className}\n`;
-                    message += `${t('booking_date')}: ${formatDate(b.date)} ${t('booking_time')} ${b.time}\n`;
-                    message += `${t('booking_participants')}: ${b.participants}\n`;
-                    message += `${t('booking_price')}: ${b.status === 'confirmed' ? t('mybookings_confirmed') : t('mybookings_cancelled')}\n\n`;
+                // Create class lookup map
+                const classMap = new Map();
+                classesData.forEach(cls => {
+                    classMap.set(cls.id, {
+                        date: cls.date,
+                        time: cls.time,
+                        duration: cls.duration
+                    });
                 });
 
-                alert(message);
+                // Merge booking data with class data
+                const enrichedBookings = bookings.map(b => {
+                    const classInfo = classMap.get(b.classId) || {};
+                    return {
+                        ...b,
+                        date: classInfo.date,
+                        time: classInfo.time,
+                        duration: classInfo.duration
+                    };
+                });
+
+                // Hide loading
+                document.getElementById('bookingsLoading').style.display = 'none';
+
+                // Show appropriate state
+                if (enrichedBookings.length === 0) {
+                    document.getElementById('bookingsEmpty').style.display = 'block';
+                } else {
+                    renderBookingsTimeline(enrichedBookings);
+                    document.getElementById('bookingsTimeline').style.display = 'block';
+                }
             } catch (error) {
                 console.error('Error loading bookings:', error);
-                alert('Ошибка загрузки бронирований');
+                document.getElementById('bookingsLoading').style.display = 'none';
+                document.getElementById('bookingsError').style.display = 'block';
             }
+        }
+
+        function renderBookingsTimeline(bookings) {
+            const timeline = document.getElementById('bookingsTimeline');
+            const currentLang = window.currentLang || 'ru';
+
+            // Sort bookings by date (newest first)
+            const sortedBookings = [...bookings].sort((a, b) => {
+                const dateA = new Date(a.date || a.createdAt);
+                const dateB = new Date(b.date || b.createdAt);
+                return dateB - dateA;
+            });
+
+            timeline.innerHTML = sortedBookings.map(booking => {
+                const className = typeof booking.className === 'object'
+                    ? booking.className[currentLang] || booking.className.ru
+                    : booking.className;
+
+                const date = booking.date ? formatDate(booking.date) : formatDate(booking.createdAt).split(',')[0];
+                const time = booking.time || '—';
+                const duration = booking.duration || '';
+                const statusText = booking.status === 'confirmed' ? t('mybookings_confirmed') : t('mybookings_cancelled');
+                const statusClass = booking.status === 'confirmed' ? 'confirmed' : 'cancelled';
+
+                return `
+                    <div class="mybookings-item">
+                        <div class="mybookings-date-column">
+                            <div class="mybookings-date">${date}</div>
+                            <div class="mybookings-time">${time}</div>
+                            <div class="mybookings-line"></div>
+                            <div class="mybookings-dot"></div>
+                        </div>
+                        <div class="mybookings-content">
+                            <div class="mybookings-header">
+                                <h4 class="mybookings-title">${className}</h4>
+                                <span class="mybookings-badge ${statusClass}">${statusText}</span>
+                            </div>
+                            <div class="mybookings-details">
+                                <div class="mybookings-detail-row">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <polyline points="12 6 12 12 16 14"/>
+                                    </svg>
+                                    <span>${time}${duration ? ' • ' + duration : ''}</span>
+                                </div>
+                                <div class="mybookings-detail-row">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                                        <circle cx="9" cy="7" r="4"/>
+                                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                    </svg>
+                                    <span><strong>${booking.participants}</strong> ${t('booking_participants').toLowerCase()}</span>
+                                </div>
+                            </div>
+                            <div class="mybookings-price-info">
+                                <div class="mybookings-price-row">
+                                    <span>${t('payment_total_cost')}:</span>
+                                    <span>€${booking.totalPrice.toFixed(2)}</span>
+                                </div>
+                                ${booking.paymentType === 'partial' ? `
+                                    <div class="mybookings-price-row">
+                                        <span>${t('payment_deposit')} (10%):</span>
+                                        <span>€${booking.paidAmount.toFixed(2)}</span>
+                                    </div>
+                                    <div class="mybookings-price-row">
+                                        <span>${t('payment_remaining')}:</span>
+                                        <span>€${booking.remainingAmount.toFixed(2)}</span>
+                                    </div>
+                                ` : ''}
+                                <div class="mybookings-price-row total">
+                                    <span>${booking.paymentType === 'partial' ? t('mybookings_paid') || 'Оплачено' : t('booking_total')}:</span>
+                                    <span>€${booking.paidAmount.toFixed(2)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
         function setupFocusTrap(modal) {
@@ -1155,6 +1548,8 @@
         window.closeModal = closeModal;
         window.updateBookingSummary = updateBookingSummary;
         window.showMyBookings = showMyBookings;
+        window.closeMyBookingsModal = closeMyBookingsModal;
+        window.loadBookings = loadBookings;
         window.togglePaymentType = togglePaymentType;
 
         document.getElementById('bookingForm').addEventListener('submit', async (e) => {
