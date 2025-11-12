@@ -540,6 +540,18 @@ app.post('/api/confirm-booking', async (req, res) => {
     }
 });
 
+// Получить бронирование по email (Public)
+// ВАЖНО: Этот роут должен быть ПЕРЕД /api/bookings, т.к. Express обрабатывает роуты сверху вниз
+app.get('/api/bookings/email/:email', async (req, res) => {
+    try {
+        const userBookings = await bookingsDb.getByEmail(req.params.email);
+        res.json(userBookings);
+    } catch (error) {
+        console.error('Error fetching bookings by email:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // Получить бронирования (Admin)
 app.get('/api/bookings', requireAuth, async (req, res) => {
     try {
@@ -547,17 +559,6 @@ app.get('/api/bookings', requireAuth, async (req, res) => {
         res.json(bookings);
     } catch (error) {
         console.error('Error fetching bookings:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// Получить бронирование по email (Public)
-app.get('/api/bookings/email/:email', async (req, res) => {
-    try {
-        const userBookings = await bookingsDb.getByEmail(req.params.email);
-        res.json(userBookings);
-    } catch (error) {
-        console.error('Error fetching bookings by email:', error);
         res.status(500).json({ error: error.message });
     }
 });
