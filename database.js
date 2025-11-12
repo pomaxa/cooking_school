@@ -33,6 +33,7 @@ function initializeDatabase() {
                 price REAL NOT NULL,
                 capacity INTEGER NOT NULL,
                 booked INTEGER DEFAULT 0,
+                audience_type TEXT DEFAULT 'mixed',
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             )
         `, (err) => {
@@ -65,6 +66,24 @@ function initializeDatabase() {
                 console.error('Error creating bookings table:', err);
             } else {
                 console.log('Bookings table ready');
+            }
+        });
+
+        // Migration: Add audience_type column if it doesn't exist
+        db.all("PRAGMA table_info(classes)", [], (err, columns) => {
+            if (err) {
+                console.error('Error checking table structure:', err);
+            } else {
+                const hasAudienceType = columns.some(col => col.name === 'audience_type');
+                if (!hasAudienceType) {
+                    db.run('ALTER TABLE classes ADD COLUMN audience_type TEXT DEFAULT "mixed"', (err) => {
+                        if (err) {
+                            console.error('Error adding audience_type column:', err);
+                        } else {
+                            console.log('Successfully added audience_type column to classes table');
+                        }
+                    });
+                }
             }
         });
     });
@@ -102,7 +121,8 @@ const classesDb = {
                         duration: row.duration,
                         price: row.price,
                         capacity: row.capacity,
-                        booked: row.booked
+                        booked: row.booked,
+                        audienceType: row.audience_type || 'mixed'
                     }));
                     resolve(classes);
                 }
@@ -139,7 +159,8 @@ const classesDb = {
                         duration: row.duration,
                         price: row.price,
                         capacity: row.capacity,
-                        booked: row.booked
+                        booked: row.booked,
+                        audienceType: row.audience_type || 'mixed'
                     };
                     resolve(classItem);
                 }
@@ -150,7 +171,7 @@ const classesDb = {
     // Create new class
     create: (classData) => {
         return new Promise((resolve, reject) => {
-            const { title, description, instructor, languages, date, time, duration, price, capacity } = classData;
+            const { title, description, instructor, languages, date, time, duration, price, capacity, audienceType } = classData;
 
             // Handle both multilingual and single language formats
             const titleRu = typeof title === 'object' ? title.ru : title;
@@ -164,14 +185,14 @@ const classesDb = {
                 INSERT INTO classes (
                     title_ru, title_lv, description_ru, description_lv,
                     instructor_ru, instructor_lv, languages, date, time,
-                    duration, price, capacity, booked
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
+                    duration, price, capacity, booked, audience_type
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?)
             `;
 
             db.run(sql, [
                 titleRu, titleLv, descRu, descLv, instrRu, instrLv,
                 JSON.stringify(languages || ['ru', 'lv']),
-                date, time, duration, price, capacity
+                date, time, duration, price, capacity, audienceType || 'mixed'
             ], function(err) {
                 if (err) {
                     reject(err);
@@ -185,7 +206,7 @@ const classesDb = {
     // Update class
     update: (id, classData) => {
         return new Promise((resolve, reject) => {
-            const { title, description, instructor, languages, date, time, duration, price, capacity } = classData;
+            const { title, description, instructor, languages, date, time, duration, price, capacity, audienceType } = classData;
 
             // Handle both multilingual and single language formats
             const titleRu = typeof title === 'object' ? title.ru : title;
@@ -199,14 +220,14 @@ const classesDb = {
                 UPDATE classes SET
                     title_ru = ?, title_lv = ?, description_ru = ?, description_lv = ?,
                     instructor_ru = ?, instructor_lv = ?, languages = ?, date = ?,
-                    time = ?, duration = ?, price = ?, capacity = ?
+                    time = ?, duration = ?, price = ?, capacity = ?, audience_type = ?
                 WHERE id = ?
             `;
 
             db.run(sql, [
                 titleRu, titleLv, descRu, descLv, instrRu, instrLv,
                 JSON.stringify(languages || ['ru', 'lv']),
-                date, time, duration, price, capacity, id
+                date, time, duration, price, capacity, audienceType || 'mixed', id
             ], function(err) {
                 if (err) {
                     reject(err);

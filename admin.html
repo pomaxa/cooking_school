@@ -447,6 +447,7 @@
                         <th>Время</th>
                         <th>Цена</th>
                         <th>Места</th>
+                        <th>Аудитория</th>
                         <th>Преподаватель</th>
                         <th>Статус</th>
                         <th>Действия</th>
@@ -604,6 +605,16 @@
                         <label for="capacity">Вместимость *</label>
                         <input type="number" id="capacity" name="capacity" required>
                     </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="audienceType">Целевая аудитория *</label>
+                    <select id="audienceType" name="audienceType" required>
+                        <option value="">Выберите аудиторию</option>
+                        <option value="adults">Для взрослых</option>
+                        <option value="kids">Для детей</option>
+                        <option value="mixed">Смешанное (для всех)</option>
+                    </select>
                 </div>
 
                 <div class="form-group">
@@ -770,7 +781,7 @@
             tbody.innerHTML = '';
 
             if (classes.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 40px;">Нет классов</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="11" style="text-align: center; padding: 40px;">Нет классов</td></tr>';
                 return;
             }
 
@@ -791,6 +802,22 @@
                     statusBadge = '<span class="badge badge-success">Есть места</span>';
                 }
 
+                // Audience type badge
+                let audienceBadge;
+                switch (classItem.audienceType) {
+                    case 'adults':
+                        audienceBadge = '<span class="badge badge-primary">👥 Взрослые</span>';
+                        break;
+                    case 'kids':
+                        audienceBadge = '<span class="badge badge-success">👶 Дети</span>';
+                        break;
+                    case 'mixed':
+                        audienceBadge = '<span class="badge badge-gradient">👨‍👩‍👧‍👦 Смешанное</span>';
+                        break;
+                    default:
+                        audienceBadge = '-';
+                }
+
                 const row = `
                     <tr>
                         <td>${classItem.id}</td>
@@ -799,6 +826,7 @@
                         <td>${classItem.time}</td>
                         <td>€${classItem.price}</td>
                         <td>${classItem.booked}/${classItem.capacity}</td>
+                        <td>${audienceBadge}</td>
                         <td>${instructor || '-'}</td>
                         <td>${statusBadge}</td>
                         <td>
@@ -870,6 +898,7 @@
             document.getElementById('duration').value = classItem.duration;
             document.getElementById('price').value = classItem.price;
             document.getElementById('capacity').value = classItem.capacity;
+            document.getElementById('audienceType').value = classItem.audienceType || '';
 
             toggleMultilingual();
             document.getElementById('classModal').style.display = 'block';
@@ -934,7 +963,8 @@
                     time: document.getElementById('time').value,
                     duration: document.getElementById('duration').value,
                     price: parseFloat(document.getElementById('price').value),
-                    capacity: parseInt(document.getElementById('capacity').value)
+                    capacity: parseInt(document.getElementById('capacity').value),
+                    audienceType: document.getElementById('audienceType').value
                 };
             } else {
                 // Collect single language data (will be converted to multilingual on server)
@@ -947,7 +977,8 @@
                     time: document.getElementById('time').value,
                     duration: document.getElementById('duration').value,
                     price: parseFloat(document.getElementById('price').value),
-                    capacity: parseInt(document.getElementById('capacity').value)
+                    capacity: parseInt(document.getElementById('capacity').value),
+                    audienceType: document.getElementById('audienceType').value
                 };
             }
 
