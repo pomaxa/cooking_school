@@ -994,6 +994,12 @@
             });
         }
 
+        // Make functions globally accessible for inline onclick handlers
+        window.openBookingModal = openBookingModal;
+        window.closeModal = closeModal;
+        window.updateBookingSummary = updateBookingSummary;
+        window.showMyBookings = showMyBookings;
+
         document.getElementById('bookingForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
