@@ -6,6 +6,12 @@
     <meta name="description" content="Кулинарная школа - запись на мастер-классы по итальянской пасте, французским десертам и другим блюдам">
     <title>Кулинарная Школа | Главная</title>
 
+    <!-- Stripe -->
+    <script src="https://js.stripe.com/v3/"></script>
+
+    <!-- Translations -->
+    <script src="translations.js"></script>
+
     <!-- Design System CSS -->
     <link rel="stylesheet" href="styles/variables.css">
     <link rel="stylesheet" href="styles/base.css">
@@ -301,23 +307,23 @@
             <div class="home-header-left">
                 <div class="home-title-row">
                     <span class="emoji">🍳</span>
-                    <h1 id="headerTitle">Кулинарная школа</h1>
+                    <h1 id="headerTitle" data-i18n="header_title">Кулинарная школа</h1>
                 </div>
-                <p class="home-subtitle" id="headerSubtitle">Научитесь готовить как профессионал</p>
+                <p class="home-subtitle" id="headerSubtitle" data-i18n="header_subtitle">Научитесь готовить как профессионал</p>
             </div>
             <div class="home-header-right">
                 <div class="lang-toggle">
-                    <button class="lang-toggle-btn active" id="langRu">RU</button>
-                    <button class="lang-toggle-btn" id="langLv">LV</button>
+                    <button class="lang-toggle-btn active" id="langRu" data-lang="ru" onclick="setLanguage('ru')">RU</button>
+                    <button class="lang-toggle-btn" id="langLv" data-lang="lv" onclick="setLanguage('lv')">LV</button>
                 </div>
-                <button class="bookings-btn" id="myBookingsBtn">
+                <button class="bookings-btn" id="myBookingsBtn" onclick="showMyBookings()">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
                         <line x1="16" x2="16" y1="2" y2="6"/>
                         <line x1="8" x2="8" y1="2" y2="6"/>
                         <line x1="3" x2="21" y1="10" y2="10"/>
                     </svg>
-                    <span class="bookings-btn-text">Мои бронирования</span>
+                    <span class="bookings-btn-text" data-i18n="nav_bookings">Мои бронирования</span>
                 </button>
             </div>
         </div>
@@ -332,155 +338,193 @@
         </div>
     </section>
 
+    <!-- Booking Modal -->
+    <div class="modal-backdrop" id="bookingModal" style="display: none;" onclick="if(event.target === this) closeModal();" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle" data-i18n="booking_title">Запись на занятие</h2>
+                <button class="modal-close" onclick="closeModal()" aria-label="Close booking dialog">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="booking-summary" id="bookingSummary"></div>
+
+                <form id="bookingForm">
+                    <div class="form-group">
+                        <label class="form-label form-label-required" data-i18n="payment_type_label">Тип оплаты</label>
+                    <div class="payment-type-options">
+                        <label class="radio-option">
+                            <input type="radio" name="paymentType" value="full" checked onchange="updateBookingSummary()">
+                            <span>
+                                <strong data-i18n="payment_full">Полная оплата (100%)</strong>
+                                <small data-i18n="payment_full_desc">Оплатите полную стоимость сейчас</small>
+                            </span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="paymentType" value="partial" onchange="updateBookingSummary()">
+                            <span>
+                                <strong data-i18n="payment_partial">Частичная оплата (10%)</strong>
+                                <small data-i18n="payment_partial_desc">Резервация места - оплатите 10% сейчас</small>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                    <div class="form-group">
+                        <label class="form-label form-label-required" for="participants" data-i18n="booking_participants">Количество участников</label>
+                        <select class="form-select" id="participants" required></select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label form-label-required" for="name" data-i18n="booking_name">Имя и Фамилия</label>
+                        <input class="form-input" type="text" id="name" required placeholder="Иван Иванов">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label form-label-required" for="email" data-i18n="booking_email">Email</label>
+                        <input class="form-input" type="email" id="email" required placeholder="ivan@example.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label form-label-required" for="phone" data-i18n="booking_phone">Телефон</label>
+                        <input class="form-input" type="tel" id="phone" required placeholder="+371 12345678">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="allergies" data-i18n="booking_allergies">Аллергии и особые пожелания</label>
+                        <textarea class="form-textarea" id="allergies" rows="3" placeholder="Укажите аллергии на продукты или особые пожелания..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="card-element" data-i18n="booking_card_label">Данные карты для оплаты</label>
+                        <div id="card-element" style="padding: var(--space-3); border: 2px solid var(--color-border-medium); border-radius: var(--radius-lg);"></div>
+                        <div id="card-errors" class="form-error-message"></div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary btn-lg btn-block" id="submitButton" data-i18n="booking_btn_pay">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                                <line x1="1" y1="10" x2="23" y2="10"/>
+                            </svg>
+                            <span>Забронировать и оплатить</span>
+                        </button>
+                    </div>
+
+                    <div id="successMessage" style="display: none;"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Classes data
-        const classes = [
-            {
-                id: '1',
-                titleRu: 'Итальянская паста',
-                titleLv: 'Itāļu pasta',
-                descRu: 'Научитесь готовить настоящую итальянскую пасту вручную с традиционными соусами.',
-                descLv: 'Iemācieties pagatavot īstu itāļu pastu ar tradicionālām mērcēm.',
-                image: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=800&h=450&fit=crop&q=80',
-                instructor: 'Marco Rossi',
-                duration: '3',
-                price: 45,
-                date: '15',
-                time: '18:00',
-                availableSeats: 4,
-                totalSeats: 12
-            },
-            {
-                id: '2',
-                titleRu: 'Французская выпечка',
-                titleLv: 'Franču konditoreja',
-                descRu: 'Освойте искусство французской кондитерской: круассаны, эклеры и макаронс.',
-                descLv: 'Apgūstiet franču konditorejas mākslu: kruasāni, eklēri un makarūni.',
-                image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=800&h=450&fit=crop&q=80',
-                instructor: 'Sophie Dubois',
-                duration: '4',
-                price: 55,
-                date: '18',
-                time: '14:00',
-                availableSeats: 6,
-                totalSeats: 10
-            },
-            {
-                id: '3',
-                titleRu: 'Суши и роллы',
-                titleLv: 'Suši un ruļļi',
-                descRu: 'Познакомьтесь с японской кухней и техниками приготовления суши.',
-                descLv: 'Iepazīstieties ar japāņu virtuvi un suši gatavošanas paņēmieniem.',
-                image: 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=800&h=450&fit=crop&q=80',
-                instructor: 'Hiroshi Tanaka',
-                duration: '3.5',
-                price: 50,
-                date: '20',
-                time: '16:00',
-                availableSeats: 8,
-                totalSeats: 12
-            },
-            {
-                id: '4',
-                titleRu: 'Авторские десерты',
-                titleLv: 'Autora deserti',
-                descRu: 'Создайте уникальные современные десерты с идеальным балансом вкусов.',
-                descLv: 'Radiet unikālus mūsdienīgus desertus ar ideālu garšu līdzsvaru.',
-                image: 'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=800&h=450&fit=crop&q=80',
-                instructor: 'Anna Petrova',
-                duration: '3',
-                price: 48,
-                date: '22',
-                time: '19:00',
-                availableSeats: 3,
-                totalSeats: 8
-            },
-            {
-                id: '5',
-                titleRu: 'Основы кулинарии',
-                titleLv: 'Kulinārijas pamati',
-                descRu: 'Комплексный курс для начинающих с изучением базовых техник.',
-                descLv: 'Visaptverošs kurss iesācējiem ar pamata paņēmienu apguvi.',
-                image: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=800&h=450&fit=crop&q=80',
-                instructor: 'Dmitrijs Ivanovs',
-                duration: '5',
-                price: 60,
-                date: '25',
-                time: '10:00',
-                availableSeats: 5,
-                totalSeats: 15
-            },
-            {
-                id: '6',
-                titleRu: 'Профессиональный курс',
-                titleLv: 'Profesionālais kurss',
-                descRu: 'Интенсив для тех, кто хочет готовить как шеф-повар.',
-                descLv: 'Intensīvs kurss tiem, kas vēlas gatavot kā šefpavārs.',
-                image: 'https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?w=800&h=450&fit=crop&q=80',
-                instructor: 'Vladimir Kuzņecovs',
-                duration: '6',
-                price: 80,
-                date: '28',
-                time: '11:00',
-                availableSeats: 2,
-                totalSeats: 8
+        let API_URL;
+        let STRIPE_PUBLIC_KEY;
+        let stripe;
+        let elements;
+        let cardElement;
+        let selectedClass = null;
+        let classes = [];
+        let clientSecret = null;
+        let lastFocusedElement = null;
+        let focusableElements = [];
+        let firstFocusableElement = null;
+        let lastFocusableElement = null;
+
+        async function loadConfig() {
+            try {
+                const response = await fetch('/config');
+                const config = await response.json();
+                API_URL = window.location.origin + config.apiUrl;
+                STRIPE_PUBLIC_KEY = config.stripePublicKey;
+
+                stripe = Stripe(STRIPE_PUBLIC_KEY);
+                elements = stripe.elements();
+
+                return true;
+            } catch (error) {
+                console.error('Error loading configuration:', error);
+                return false;
             }
-        ];
+        }
 
-        // Translations
-        const translations = {
-            ru: {
-                title: 'Кулинарная школа',
-                subtitle: 'Научитесь готовить как профессионал',
-                myBookings: 'Мои бронирования',
-                hours: 'часа',
-                seatsLeft: 'Осталось',
-                of: 'из',
-                seats: 'мест',
-                noSeats: 'Мест нет',
-                bookButton: 'Забронировать',
-                november: 'ноября'
-            },
-            lv: {
-                title: 'Kulinārijas skola',
-                subtitle: 'Iemācieties gatavot kā profesionālis',
-                myBookings: 'Manas rezervācijas',
-                hours: 'stundas',
-                seatsLeft: 'Atliek',
-                of: 'no',
-                seats: 'vietām',
-                noSeats: 'Nav vietu',
-                bookButton: 'Rezervēt',
-                november: 'novembris'
+        async function loadClasses() {
+            try {
+                renderSkeletons();
+
+                const response = await fetch(`${API_URL}/classes`);
+
+                if (!response.ok) {
+                    throw new Error('Failed to load classes');
+                }
+
+                classes = await response.json();
+
+                setTimeout(() => {
+                    renderClasses();
+                }, 300);
+            } catch (error) {
+                console.error('Error loading classes:', error);
+                const grid = document.getElementById('classesGrid');
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
+                        <p style="color: var(--color-error);">Ошибка загрузки. Проверьте, что сервер запущен.</p>
+                    </div>
+                `;
             }
-        };
+        }
 
-        let currentLang = 'ru';
-
-        // Update UI
-        function updateUI() {
-            const t = translations[currentLang];
-
-            // Update header
-            document.getElementById('headerTitle').textContent = t.title;
-            document.getElementById('headerSubtitle').textContent = t.subtitle;
-            document.querySelector('.bookings-btn-text').textContent = t.myBookings;
-
-            // Update cards
+        function renderSkeletons() {
             const grid = document.getElementById('classesGrid');
-            grid.innerHTML = classes.map(classItem => {
-                const title = currentLang === 'ru' ? classItem.titleRu : classItem.titleLv;
-                const desc = currentLang === 'ru' ? classItem.descRu : classItem.descLv;
-                const lowSeats = classItem.availableSeats <= 3;
+            const skeletonHTML = Array(6).fill(0).map((_, index) => `
+                <div class="skeleton-class-card" style="animation-delay: ${index * 0.1}s;">
+                    <div class="skeleton-header">
+                        <div class="skeleton-title"></div>
+                        <div class="skeleton-price"></div>
+                    </div>
+                    <div class="skeleton-info">
+                        <div class="skeleton-info-item"></div>
+                        <div class="skeleton-info-item"></div>
+                        <div class="skeleton-info-item"></div>
+                    </div>
+                    <div class="skeleton-description"></div>
+                    <div class="skeleton-description" style="width: 80%;"></div>
+                    <div class="skeleton-capacity">
+                        <div class="skeleton-capacity-label"></div>
+                        <div class="skeleton-capacity-bar"></div>
+                    </div>
+                    <div class="skeleton-button"></div>
+                </div>
+            `).join('');
+            grid.innerHTML = skeletonHTML;
+        }
+
+        function renderClasses() {
+            const grid = document.getElementById('classesGrid');
+            const currentLang = window.currentLang || 'ru';
+
+            grid.innerHTML = classes.map(cls => {
+                const availableSpots = cls.capacity - cls.booked;
+                const isFull = availableSpots <= 0;
+                const lowSeats = availableSpots <= 3;
+
+                const title = typeof cls.title === 'object' ? cls.title[currentLang] || cls.title.ru : cls.title;
+                const description = typeof cls.description === 'object' ? cls.description[currentLang] || cls.description.ru : cls.description;
+                const instructor = typeof cls.instructor === 'object' ? cls.instructor[currentLang] || cls.instructor.ru : cls.instructor;
 
                 return `
                     <div class="class-card">
                         <div class="class-card-image-wrapper">
-                            <img src="${classItem.image}" alt="${title}" class="class-card-image" loading="lazy">
+                            <img src="${getHeroImage(cls.id, title)}" alt="${title}" class="class-card-image" loading="lazy">
                         </div>
                         <div class="class-card-body">
                             <h3 class="class-card-title">${title}</h3>
-                            <div class="class-card-price">€${classItem.price}</div>
+                            <div class="class-card-price">€${cls.price}</div>
                             <div class="class-card-meta">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
@@ -488,23 +532,23 @@
                                     <line x1="8" x2="8" y1="2" y2="6"/>
                                     <line x1="3" x2="21" y1="10" y2="10"/>
                                 </svg>
-                                <span>${classItem.date} ${t.november} 2025</span>
+                                <span>${formatDate(cls.date)}</span>
                             </div>
                             <div class="class-card-meta">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <circle cx="12" cy="12" r="10"/>
                                     <polyline points="12 6 12 12 16 14"/>
                                 </svg>
-                                <span>${classItem.time} • ${classItem.duration} ${t.hours}</span>
+                                <span>${cls.time} • ${cls.duration}</span>
                             </div>
                             <div class="class-card-meta">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/>
                                     <line x1="6" x2="18" y1="17" y2="17"/>
                                 </svg>
-                                <span>${classItem.instructor}</span>
+                                <span>${instructor}</span>
                             </div>
-                            <p class="class-card-description">${desc}</p>
+                            <p class="class-card-description">${description}</p>
                             <div class="class-card-seats ${lowSeats ? 'low-seats' : ''}">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
@@ -512,47 +556,595 @@
                                     <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
                                     <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                                 </svg>
-                                <span>${t.seatsLeft} ${classItem.availableSeats} ${t.of} ${classItem.totalSeats} ${t.seats}</span>
+                                <span>${t('class_available')} ${availableSpots} ${t('class_capacity')} ${cls.capacity}</span>
                             </div>
                         </div>
                         <div class="class-card-footer">
-                            <button class="class-card-book-btn" onclick="bookClass('${classItem.id}')" ${classItem.availableSeats === 0 ? 'disabled' : ''}>
-                                ${classItem.availableSeats === 0 ? t.noSeats : `✅ ${t.bookButton}`}
+                            <button class="class-card-book-btn" onclick="openBookingModal(${cls.id})" ${isFull ? 'disabled' : ''}>
+                                ${isFull ? t('class_full') : t('class_book')}
                             </button>
                         </div>
                     </div>
                 `;
             }).join('');
+
+            setTimeout(() => initScrollAnimations(), 100);
         }
 
-        // Language switching
-        document.getElementById('langRu').addEventListener('click', () => {
-            currentLang = 'ru';
-            document.getElementById('langRu').classList.add('active');
-            document.getElementById('langLv').classList.remove('active');
-            updateUI();
-        });
-
-        document.getElementById('langLv').addEventListener('click', () => {
-            currentLang = 'lv';
-            document.getElementById('langLv').classList.add('active');
-            document.getElementById('langRu').classList.remove('active');
-            updateUI();
-        });
-
-        // Book class
-        function bookClass(classId) {
-            // Redirect to index.html with class ID
-            window.location.href = `index.html#class-${classId}`;
+        function getHeroImage(classId, title) {
+            const imageMap = {
+                1: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=800&h=450&fit=crop&q=80',
+                2: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=800&h=450&fit=crop&q=80',
+                3: 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=800&h=450&fit=crop&q=80',
+                4: 'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=800&h=450&fit=crop&q=80',
+                5: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=800&h=450&fit=crop&q=80',
+                6: 'https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?w=800&h=450&fit=crop&q=80'
+            };
+            return imageMap[classId] || 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=800&h=450&fit=crop&q=80';
         }
 
-        // My bookings
-        document.getElementById('myBookingsBtn').addEventListener('click', () => {
-            window.location.href = 'index.html#my-bookings';
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            const currentLang = window.currentLang || 'ru';
+            const locale = currentLang === 'lv' ? 'lv-LV' : 'ru-RU';
+            return date.toLocaleDateString(locale, options);
+        }
+
+        function getAudienceBadge(audienceType) {
+            switch (audienceType) {
+                case 'adults':
+                    return '<span class="badge badge-primary">Для взрослых</span>';
+                case 'kids':
+                    return '<span class="badge badge-success">Для детей</span>';
+                case 'mixed':
+                    return '<span class="badge badge-gradient">Для всех</span>';
+                default:
+                    return '';
+            }
+        }
+
+        function getIcon(name) {
+            const icons = {
+                calendar: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+                clock: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+                chef: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/><line x1="6" y1="17" x2="18" y2="17"/></svg>',
+                check: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+                close: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'
+            };
+            return icons[name] || '';
+        }
+
+        async function openBookingModal(classId) {
+            lastFocusedElement = document.activeElement;
+
+            selectedClass = classes.find(c => c.id === classId);
+            const modal = document.getElementById('bookingModal');
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+
+            updateBookingSummary();
+
+            const participantsSelect = document.getElementById('participants');
+            const availableSpots = selectedClass.capacity - selectedClass.booked;
+            participantsSelect.innerHTML = '';
+            for (let i = 1; i <= availableSpots; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                participantsSelect.appendChild(option);
+            }
+
+            loadCustomerData();
+
+            if (!cardElement) {
+                cardElement = elements.create('card', {
+                    hidePostalCode: true,
+                    style: {
+                        base: {
+                            fontSize: '16px',
+                            color: '#32325d',
+                            '::placeholder': {
+                                color: '#aab7c4',
+                            },
+                        },
+                    },
+                });
+                cardElement.mount('#card-element');
+
+                cardElement.on('change', (event) => {
+                    const displayError = document.getElementById('card-errors');
+                    if (event.error) {
+                        displayError.textContent = event.error.message;
+                    } else {
+                        displayError.textContent = '';
+                    }
+                });
+            }
+
+            participantsSelect.addEventListener('change', updateBookingSummary);
+
+            setupFormValidation();
+
+            setupFocusTrap(modal);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('bookingModal');
+
+            removeFocusTrap(modal);
+
+            modal.style.display = 'none';
+            document.getElementById('bookingForm').reset();
+            document.getElementById('successMessage').style.display = 'none';
+            document.body.style.overflow = '';
+            clientSecret = null;
+        }
+
+        function updateBookingSummary() {
+            if (!selectedClass) return;
+
+            const participants = parseInt(document.getElementById('participants').value) || 1;
+            const paymentType = document.querySelector('input[name="paymentType"]:checked')?.value || 'full';
+            const total = selectedClass.price * participants;
+            const paymentAmount = paymentType === 'partial' ? Math.round(total * 0.1 * 100) / 100 : total;
+            const currentLang = window.currentLang || 'ru';
+
+            const title = typeof selectedClass.title === 'object'
+                ? selectedClass.title[currentLang] || selectedClass.title.ru
+                : selectedClass.title;
+
+            let paymentDetails = '';
+            if (paymentType === 'partial') {
+                const remaining = total - paymentAmount;
+                paymentDetails = `
+                    <div class="booking-summary-item">
+                        <span data-i18n="payment_deposit">${t('payment_deposit')} (10%):</span>
+                        <span>€${paymentAmount.toFixed(2)}</span>
+                    </div>
+                    <div class="booking-summary-item">
+                        <span data-i18n="payment_remaining">${t('payment_remaining')}:</span>
+                        <span>€${remaining.toFixed(2)}</span>
+                    </div>
+                `;
+            }
+
+            document.getElementById('bookingSummary').innerHTML = `
+                <div class="booking-summary-item">
+                    <span data-i18n="booking_class">${t('booking_class')}:</span>
+                    <span><strong>${title}</strong></span>
+                </div>
+                <div class="booking-summary-item">
+                    <span data-i18n="booking_date">${t('booking_date')}:</span>
+                    <span>${formatDate(selectedClass.date)} ${t('booking_time')} ${selectedClass.time}</span>
+                </div>
+                <div class="booking-summary-item">
+                    <span data-i18n="booking_participants">${t('booking_participants')}:</span>
+                    <span>${participants} × €${selectedClass.price}</span>
+                </div>
+                <div class="booking-summary-item">
+                    <span data-i18n="payment_total_cost">${t('payment_total_cost')}:</span>
+                    <span>€${total.toFixed(2)}</span>
+                </div>
+                ${paymentDetails}
+                <div class="booking-summary-item booking-summary-total">
+                    <span data-i18n="booking_total">${t('booking_total')}:</span>
+                    <span>€${paymentAmount.toFixed(2)}</span>
+                </div>
+            `;
+        }
+
+        function validateName(input) {
+            const value = input.value.trim();
+            const errorId = 'name-error';
+            let existingError = document.getElementById(errorId);
+
+            if (value.length < 2) {
+                input.classList.add('form-input-error');
+                if (!existingError) {
+                    const errorMsg = document.createElement('div');
+                    errorMsg.id = errorId;
+                    errorMsg.className = 'form-error-message';
+                    errorMsg.innerHTML = `
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
+                            <line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                        <span>Введите имя и фамилию</span>
+                    `;
+                    input.parentNode.appendChild(errorMsg);
+                }
+                return false;
+            } else {
+                input.classList.remove('form-input-error');
+                if (existingError) existingError.remove();
+                return true;
+            }
+        }
+
+        function validateEmail(input) {
+            const value = input.value.trim();
+            const errorId = 'email-error';
+            let existingError = document.getElementById(errorId);
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!emailRegex.test(value)) {
+                input.classList.add('form-input-error');
+                if (!existingError) {
+                    const errorMsg = document.createElement('div');
+                    errorMsg.id = errorId;
+                    errorMsg.className = 'form-error-message';
+                    errorMsg.innerHTML = `
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
+                            <line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                        <span>Введите корректный email</span>
+                    `;
+                    input.parentNode.appendChild(errorMsg);
+                }
+                return false;
+            } else {
+                input.classList.remove('form-input-error');
+                if (existingError) existingError.remove();
+                return true;
+            }
+        }
+
+        function validatePhone(input) {
+            const value = input.value.trim();
+            const errorId = 'phone-error';
+            let existingError = document.getElementById(errorId);
+            const phoneRegex = /^[\+]?[(]?[0-9]{1,4}[)]?[-\s\.]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,9}$/;
+
+            if (!phoneRegex.test(value) || value.length < 8) {
+                input.classList.add('form-input-error');
+                if (!existingError) {
+                    const errorMsg = document.createElement('div');
+                    errorMsg.id = errorId;
+                    errorMsg.className = 'form-error-message';
+                    errorMsg.innerHTML = `
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
+                            <line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                        <span>Введите корректный телефон</span>
+                    `;
+                    input.parentNode.appendChild(errorMsg);
+                }
+                return false;
+            } else {
+                input.classList.remove('form-input-error');
+                if (existingError) existingError.remove();
+                return true;
+            }
+        }
+
+        function setupFormValidation() {
+            const nameInput = document.getElementById('name');
+            const emailInput = document.getElementById('email');
+            const phoneInput = document.getElementById('phone');
+
+            nameInput.addEventListener('blur', () => validateName(nameInput));
+            nameInput.addEventListener('input', () => {
+                if (nameInput.classList.contains('form-input-error')) {
+                    validateName(nameInput);
+                }
+            });
+
+            emailInput.addEventListener('blur', () => validateEmail(emailInput));
+            emailInput.addEventListener('input', () => {
+                if (emailInput.classList.contains('form-input-error')) {
+                    validateEmail(emailInput);
+                }
+            });
+
+            phoneInput.addEventListener('blur', () => validatePhone(phoneInput));
+            phoneInput.addEventListener('input', () => {
+                if (phoneInput.classList.contains('form-input-error')) {
+                    validatePhone(phoneInput);
+                }
+            });
+        }
+
+        function saveCustomerData(name, email, phone, allergies = '') {
+            try {
+                const data = { name, email, phone, allergies };
+                localStorage.setItem('customerData', JSON.stringify(data));
+            } catch (e) {
+                console.error('Error saving customer data:', e);
+            }
+        }
+
+        function loadCustomerData() {
+            const savedData = localStorage.getItem('customerData');
+            if (savedData) {
+                try {
+                    const data = JSON.parse(savedData);
+                    if (data.name) document.getElementById('name').value = data.name;
+                    if (data.email) document.getElementById('email').value = data.email;
+                    if (data.phone) document.getElementById('phone').value = data.phone;
+                    if (data.allergies) document.getElementById('allergies').value = data.allergies;
+                } catch (e) {
+                    console.error('Error loading customer data:', e);
+                }
+            }
+        }
+
+        async function showMyBookings() {
+            let savedEmail = '';
+            const savedData = localStorage.getItem('customerData');
+            if (savedData) {
+                try {
+                    const data = JSON.parse(savedData);
+                    savedEmail = data.email || '';
+                } catch (e) {
+                    console.error('Error loading saved email:', e);
+                }
+            }
+
+            const email = prompt(t('mybookings_enter_email'), savedEmail);
+            if (!email) return;
+
+            try {
+                const response = await fetch(`${API_URL}/bookings/email/${encodeURIComponent(email)}`);
+                if (!response.ok) {
+                    throw new Error('Failed to load bookings');
+                }
+
+                const bookings = await response.json();
+
+                if (bookings.length === 0) {
+                    alert(t('mybookings_none'));
+                    return;
+                }
+
+                let message = t('mybookings_title') + ':\n\n';
+                bookings.forEach(b => {
+                    message += `#${b.id} - ${b.className}\n`;
+                    message += `${t('booking_date')}: ${formatDate(b.date)} ${t('booking_time')} ${b.time}\n`;
+                    message += `${t('booking_participants')}: ${b.participants}\n`;
+                    message += `${t('booking_price')}: ${b.status === 'confirmed' ? t('mybookings_confirmed') : t('mybookings_cancelled')}\n\n`;
+                });
+
+                alert(message);
+            } catch (error) {
+                console.error('Error loading bookings:', error);
+                alert('Ошибка загрузки бронирований');
+            }
+        }
+
+        function setupFocusTrap(modal) {
+            const focusableSelectors = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+            focusableElements = modal.querySelectorAll(focusableSelectors);
+            firstFocusableElement = focusableElements[0];
+            lastFocusableElement = focusableElements[focusableElements.length - 1];
+
+            modal.addEventListener('keydown', handleFocusTrap);
+
+            setTimeout(() => {
+                if (firstFocusableElement) {
+                    firstFocusableElement.focus();
+                }
+            }, 100);
+        }
+
+        function removeFocusTrap(modal) {
+            modal.removeEventListener('keydown', handleFocusTrap);
+
+            if (lastFocusedElement) {
+                lastFocusedElement.focus();
+                lastFocusedElement = null;
+            }
+        }
+
+        function handleFocusTrap(e) {
+            if (e.key !== 'Tab') return;
+
+            if (e.shiftKey) {
+                if (document.activeElement === firstFocusableElement) {
+                    e.preventDefault();
+                    lastFocusableElement.focus();
+                }
+            } else {
+                if (document.activeElement === lastFocusableElement) {
+                    e.preventDefault();
+                    firstFocusableElement.focus();
+                }
+            }
+        }
+
+        function initScrollAnimations() {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px 0px -100px 0px',
+                threshold: 0.1
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.scroll-reveal').forEach(el => {
+                observer.observe(el);
+            });
+        }
+
+        document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const nameInput = document.getElementById('name');
+            const emailInput = document.getElementById('email');
+            const phoneInput = document.getElementById('phone');
+
+            const isNameValid = validateName(nameInput);
+            const isEmailValid = validateEmail(emailInput);
+            const isPhoneValid = validatePhone(phoneInput);
+
+            if (!isNameValid || !isEmailValid || !isPhoneValid) {
+                const firstError = document.querySelector('.form-input-error');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    firstError.focus();
+                }
+                return;
+            }
+
+            const submitButton = document.getElementById('submitButton');
+            submitButton.disabled = true;
+            const originalButtonContent = submitButton.innerHTML;
+            submitButton.innerHTML = `
+                <svg class="animate-spin" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" opacity="0.25"/><path d="M12 2 A 10 10 0 0 1 22 12" opacity="0.75"/>
+                </svg>
+                <span>Обработка...</span>
+            `;
+
+            const name = nameInput.value;
+            const email = emailInput.value;
+            const phone = phoneInput.value;
+            const allergies = document.getElementById('allergies').value;
+            const participants = parseInt(document.getElementById('participants').value);
+            const paymentType = document.querySelector('input[name="paymentType"]:checked').value;
+
+            try {
+                if (!clientSecret) {
+                    const response = await fetch(`${API_URL}/create-payment-intent`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            classId: selectedClass.id,
+                            participants: participants,
+                            email: email,
+                            name: name,
+                            paymentType: paymentType
+                        }),
+                    });
+
+                    if (!response.ok) {
+                        const error = await response.json();
+                        throw new Error(error.error || 'Failed to create payment');
+                    }
+
+                    const data = await response.json();
+                    clientSecret = data.clientSecret;
+                }
+
+                const { paymentIntent, error: stripeError } = await stripe.confirmCardPayment(
+                    clientSecret,
+                    {
+                        payment_method: {
+                            card: cardElement,
+                            billing_details: {
+                                name: name,
+                                email: email,
+                                phone: phone,
+                            },
+                        },
+                    }
+                );
+
+                if (stripeError) {
+                    throw new Error(stripeError.message);
+                }
+
+                const confirmResponse = await fetch(`${API_URL}/confirm-booking`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        paymentIntentId: paymentIntent.id,
+                        classId: selectedClass.id,
+                        name: name,
+                        email: email,
+                        phone: phone,
+                        participants: participants,
+                        paymentType: paymentType
+                    }),
+                });
+
+                if (!confirmResponse.ok) {
+                    const error = await confirmResponse.json();
+                    throw new Error(error.error || 'Failed to confirm booking');
+                }
+
+                const booking = await confirmResponse.json();
+
+                saveCustomerData(name, email, phone, allergies);
+
+                await loadClasses();
+
+                const currentLang = window.currentLang || 'ru';
+                const title = typeof selectedClass.title === 'object'
+                    ? selectedClass.title[currentLang] || selectedClass.title.ru
+                    : selectedClass.title;
+
+                document.getElementById('successMessage').innerHTML = `
+                    <div class="success-message">
+                        <div class="success-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10" fill="var(--color-success)" stroke="var(--color-success)"/>
+                                <polyline points="8 12 11 15 16 9" stroke="white" stroke-width="3"/>
+                            </svg>
+                        </div>
+                        <h3>${t('msg_success')}</h3>
+                        <p>${t('msg_booking_success')}</p>
+                        <p>${name}!</p>
+                        <p>"${title}"</p>
+                        <p>${t('booking_participants')}: ${participants}</p>
+                        <p>${email}</p>
+                        <p style="margin-top: 15px; font-size: 0.9em;">ID: #${booking.booking.id}</p>
+                    </div>
+                `;
+                document.getElementById('successMessage').style.display = 'block';
+                document.getElementById('bookingForm').style.display = 'none';
+
+                setTimeout(() => {
+                    closeModal();
+                    document.getElementById('bookingForm').style.display = 'block';
+                }, 4000);
+
+            } catch (error) {
+                console.error('Payment error:', error);
+                document.getElementById('card-errors').textContent = error.message;
+                submitButton.disabled = false;
+                submitButton.innerHTML = originalButtonContent;
+            }
         });
 
-        // Initialize
-        updateUI();
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('bookingModal');
+                if (modal.style.display === 'flex') {
+                    closeModal();
+                }
+            }
+        });
+
+        document.addEventListener('languageChanged', () => {
+            renderClasses();
+            if (selectedClass) {
+                updateBookingSummary();
+            }
+        });
+
+        (async function init() {
+            initScrollAnimations();
+            const loaded = await loadConfig();
+            if (loaded) {
+                loadClasses();
+            }
+            const savedLang = getCurrentLanguage();
+            setLanguage(savedLang);
+        })();
     </script>
 </body>
 </html>
