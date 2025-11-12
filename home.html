@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Кулинарная школа - запись на мастер-классы по итальянской пасте, французским десертам и другим блюдам">
+    <title>Кулинарная Школа | Главная</title>
+
+    <!-- Design System CSS -->
+    <link rel="stylesheet" href="styles/variables.css">
+    <link rel="stylesheet" href="styles/base.css">
+    <link rel="stylesheet" href="styles/animations.css">
+    <link rel="stylesheet" href="styles/components.css">
+
+    <style>
+        /* Home Page Specific Styles */
+        body {
+            background: #FFF8F0;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Sticky Header */
+        .home-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .home-header-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .home-header-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .home-title-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .home-title-row .emoji {
+            font-size: 2rem;
+        }
+
+        .home-title-row h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+            color: var(--color-text-primary);
+        }
+
+        .home-subtitle {
+            font-size: 0.875rem;
+            color: var(--color-text-secondary);
+            margin: 0;
+            margin-left: 2.5rem;
+        }
+
+        .home-header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .lang-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            background: var(--color-bg-tertiary);
+            border-radius: var(--radius-lg);
+            padding: 0.25rem;
+        }
+
+        .lang-toggle-btn {
+            padding: 0.375rem 0.75rem;
+            border-radius: var(--radius-base);
+            font-size: 0.875rem;
+            border: none;
+            background: transparent;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            font-weight: var(--font-weight-medium);
+        }
+
+        .lang-toggle-btn.active {
+            background: white;
+            color: var(--color-text-primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .lang-toggle-btn:hover:not(.active) {
+            color: var(--color-text-primary);
+        }
+
+        .bookings-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--color-border-medium);
+            border-radius: var(--radius-base);
+            background: white;
+            color: var(--color-text-primary);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            font-size: 0.875rem;
+        }
+
+        .bookings-btn:hover {
+            background: var(--color-bg-secondary);
+        }
+
+        .bookings-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .bookings-btn-text {
+            display: none;
+        }
+
+        /* Classes Section */
+        .classes-section {
+            padding: 3rem 1rem;
+        }
+
+        .classes-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .classes-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        /* Class Card */
+        .class-card {
+            background: white;
+            border-radius: var(--radius-2xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            transition: box-shadow var(--transition-base);
+        }
+
+        .class-card:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .class-card-image-wrapper {
+            position: relative;
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+        }
+
+        .class-card-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform var(--transition-slow);
+        }
+
+        .class-card:hover .class-card-image {
+            transform: scale(1.05);
+        }
+
+        .class-card-body {
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .class-card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin: 0;
+        }
+
+        .class-card-price {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--color-primary-600);
+        }
+
+        .class-card-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--color-text-secondary);
+        }
+
+        .class-card-meta svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .class-card-description {
+            font-size: 0.875rem;
+            color: var(--color-text-secondary);
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .class-card-seats {
+            padding-top: 0.5rem;
+            border-top: 1px solid var(--color-border-light);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .class-card-seats svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .class-card-seats.low-seats {
+            color: var(--color-error);
+        }
+
+        .class-card-footer {
+            padding: 0 1rem 1rem;
+        }
+
+        .class-card-book-btn {
+            width: 100%;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: var(--radius-base);
+            background: var(--color-primary-600);
+            color: white;
+            font-weight: var(--font-weight-medium);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .class-card-book-btn:hover {
+            background: var(--color-primary-700);
+        }
+
+        .class-card-book-btn:disabled {
+            background: var(--color-bg-tertiary);
+            color: var(--color-text-secondary);
+            cursor: not-allowed;
+        }
+
+        /* Responsive */
+        @media (min-width: 640px) {
+            .bookings-btn-text {
+                display: inline;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .classes-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .home-title-row h1 {
+                font-size: 2rem;
+            }
+
+            .home-title-row .emoji {
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .classes-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="home-header">
+        <div class="home-header-container">
+            <div class="home-header-left">
+                <div class="home-title-row">
+                    <span class="emoji">🍳</span>
+                    <h1 id="headerTitle">Кулинарная школа</h1>
+                </div>
+                <p class="home-subtitle" id="headerSubtitle">Научитесь готовить как профессионал</p>
+            </div>
+            <div class="home-header-right">
+                <div class="lang-toggle">
+                    <button class="lang-toggle-btn active" id="langRu">RU</button>
+                    <button class="lang-toggle-btn" id="langLv">LV</button>
+                </div>
+                <button class="bookings-btn" id="myBookingsBtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+                        <line x1="16" x2="16" y1="2" y2="6"/>
+                        <line x1="8" x2="8" y1="2" y2="6"/>
+                        <line x1="3" x2="21" y1="10" y2="10"/>
+                    </svg>
+                    <span class="bookings-btn-text">Мои бронирования</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Classes Grid -->
+    <section class="classes-section">
+        <div class="classes-container">
+            <div class="classes-grid" id="classesGrid">
+                <!-- Cards will be rendered here -->
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Classes data
+        const classes = [
+            {
+                id: '1',
+                titleRu: 'Итальянская паста',
+                titleLv: 'Itāļu pasta',
+                descRu: 'Научитесь готовить настоящую итальянскую пасту вручную с традиционными соусами.',
+                descLv: 'Iemācieties pagatavot īstu itāļu pastu ar tradicionālām mērcēm.',
+                image: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=800&h=450&fit=crop&q=80',
+                instructor: 'Marco Rossi',
+                duration: '3',
+                price: 45,
+                date: '15',
+                time: '18:00',
+                availableSeats: 4,
+                totalSeats: 12
+            },
+            {
+                id: '2',
+                titleRu: 'Французская выпечка',
+                titleLv: 'Franču konditoreja',
+                descRu: 'Освойте искусство французской кондитерской: круассаны, эклеры и макаронс.',
+                descLv: 'Apgūstiet franču konditorejas mākslu: kruasāni, eklēri un makarūni.',
+                image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=800&h=450&fit=crop&q=80',
+                instructor: 'Sophie Dubois',
+                duration: '4',
+                price: 55,
+                date: '18',
+                time: '14:00',
+                availableSeats: 6,
+                totalSeats: 10
+            },
+            {
+                id: '3',
+                titleRu: 'Суши и роллы',
+                titleLv: 'Suši un ruļļi',
+                descRu: 'Познакомьтесь с японской кухней и техниками приготовления суши.',
+                descLv: 'Iepazīstieties ar japāņu virtuvi un suši gatavošanas paņēmieniem.',
+                image: 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=800&h=450&fit=crop&q=80',
+                instructor: 'Hiroshi Tanaka',
+                duration: '3.5',
+                price: 50,
+                date: '20',
+                time: '16:00',
+                availableSeats: 8,
+                totalSeats: 12
+            },
+            {
+                id: '4',
+                titleRu: 'Авторские десерты',
+                titleLv: 'Autora deserti',
+                descRu: 'Создайте уникальные современные десерты с идеальным балансом вкусов.',
+                descLv: 'Radiet unikālus mūsdienīgus desertus ar ideālu garšu līdzsvaru.',
+                image: 'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=800&h=450&fit=crop&q=80',
+                instructor: 'Anna Petrova',
+                duration: '3',
+                price: 48,
+                date: '22',
+                time: '19:00',
+                availableSeats: 3,
+                totalSeats: 8
+            },
+            {
+                id: '5',
+                titleRu: 'Основы кулинарии',
+                titleLv: 'Kulinārijas pamati',
+                descRu: 'Комплексный курс для начинающих с изучением базовых техник.',
+                descLv: 'Visaptverošs kurss iesācējiem ar pamata paņēmienu apguvi.',
+                image: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=800&h=450&fit=crop&q=80',
+                instructor: 'Dmitrijs Ivanovs',
+                duration: '5',
+                price: 60,
+                date: '25',
+                time: '10:00',
+                availableSeats: 5,
+                totalSeats: 15
+            },
+            {
+                id: '6',
+                titleRu: 'Профессиональный курс',
+                titleLv: 'Profesionālais kurss',
+                descRu: 'Интенсив для тех, кто хочет готовить как шеф-повар.',
+                descLv: 'Intensīvs kurss tiem, kas vēlas gatavot kā šefpavārs.',
+                image: 'https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?w=800&h=450&fit=crop&q=80',
+                instructor: 'Vladimir Kuzņecovs',
+                duration: '6',
+                price: 80,
+                date: '28',
+                time: '11:00',
+                availableSeats: 2,
+                totalSeats: 8
+            }
+        ];
+
+        // Translations
+        const translations = {
+            ru: {
+                title: 'Кулинарная школа',
+                subtitle: 'Научитесь готовить как профессионал',
+                myBookings: 'Мои бронирования',
+                hours: 'часа',
+                seatsLeft: 'Осталось',
+                of: 'из',
+                seats: 'мест',
+                noSeats: 'Мест нет',
+                bookButton: 'Забронировать',
+                november: 'ноября'
+            },
+            lv: {
+                title: 'Kulinārijas skola',
+                subtitle: 'Iemācieties gatavot kā profesionālis',
+                myBookings: 'Manas rezervācijas',
+                hours: 'stundas',
+                seatsLeft: 'Atliek',
+                of: 'no',
+                seats: 'vietām',
+                noSeats: 'Nav vietu',
+                bookButton: 'Rezervēt',
+                november: 'novembris'
+            }
+        };
+
+        let currentLang = 'ru';
+
+        // Update UI
+        function updateUI() {
+            const t = translations[currentLang];
+
+            // Update header
+            document.getElementById('headerTitle').textContent = t.title;
+            document.getElementById('headerSubtitle').textContent = t.subtitle;
+            document.querySelector('.bookings-btn-text').textContent = t.myBookings;
+
+            // Update cards
+            const grid = document.getElementById('classesGrid');
+            grid.innerHTML = classes.map(classItem => {
+                const title = currentLang === 'ru' ? classItem.titleRu : classItem.titleLv;
+                const desc = currentLang === 'ru' ? classItem.descRu : classItem.descLv;
+                const lowSeats = classItem.availableSeats <= 3;
+
+                return `
+                    <div class="class-card">
+                        <div class="class-card-image-wrapper">
+                            <img src="${classItem.image}" alt="${title}" class="class-card-image" loading="lazy">
+                        </div>
+                        <div class="class-card-body">
+                            <h3 class="class-card-title">${title}</h3>
+                            <div class="class-card-price">€${classItem.price}</div>
+                            <div class="class-card-meta">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+                                    <line x1="16" x2="16" y1="2" y2="6"/>
+                                    <line x1="8" x2="8" y1="2" y2="6"/>
+                                    <line x1="3" x2="21" y1="10" y2="10"/>
+                                </svg>
+                                <span>${classItem.date} ${t.november} 2025</span>
+                            </div>
+                            <div class="class-card-meta">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                                <span>${classItem.time} • ${classItem.duration} ${t.hours}</span>
+                            </div>
+                            <div class="class-card-meta">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/>
+                                    <line x1="6" x2="18" y1="17" y2="17"/>
+                                </svg>
+                                <span>${classItem.instructor}</span>
+                            </div>
+                            <p class="class-card-description">${desc}</p>
+                            <div class="class-card-seats ${lowSeats ? 'low-seats' : ''}">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="9" cy="7" r="4"/>
+                                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                </svg>
+                                <span>${t.seatsLeft} ${classItem.availableSeats} ${t.of} ${classItem.totalSeats} ${t.seats}</span>
+                            </div>
+                        </div>
+                        <div class="class-card-footer">
+                            <button class="class-card-book-btn" onclick="bookClass('${classItem.id}')" ${classItem.availableSeats === 0 ? 'disabled' : ''}>
+                                ${classItem.availableSeats === 0 ? t.noSeats : `✅ ${t.bookButton}`}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Language switching
+        document.getElementById('langRu').addEventListener('click', () => {
+            currentLang = 'ru';
+            document.getElementById('langRu').classList.add('active');
+            document.getElementById('langLv').classList.remove('active');
+            updateUI();
+        });
+
+        document.getElementById('langLv').addEventListener('click', () => {
+            currentLang = 'lv';
+            document.getElementById('langLv').classList.add('active');
+            document.getElementById('langRu').classList.remove('active');
+            updateUI();
+        });
+
+        // Book class
+        function bookClass(classId) {
+            // Redirect to index.html with class ID
+            window.location.href = `index.html#class-${classId}`;
+        }
+
+        // My bookings
+        document.getElementById('myBookingsBtn').addEventListener('click', () => {
+            window.location.href = 'index.html#my-bookings';
+        });
+
+        // Initialize
+        updateUI();
+    </script>
+</body>
+</html>
