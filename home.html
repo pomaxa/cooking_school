@@ -617,6 +617,19 @@
             z-index: 10000 !important;
         }
 
+        /* Mobile: Pin modal to top */
+        @media (max-width: 767px) {
+            .modal-backdrop {
+                align-items: flex-start !important;
+                padding-top: 1rem !important;
+                padding-bottom: 0.5rem !important;
+            }
+
+            .modal-backdrop .modal {
+                max-height: 90vh;
+            }
+        }
+
         /* Responsive */
         @media (min-width: 640px) {
             .bookings-btn-text {
