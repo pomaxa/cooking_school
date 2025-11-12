@@ -272,6 +272,25 @@
             cursor: not-allowed;
         }
 
+        /* Modal Overrides - Ensure visibility */
+        .modal-backdrop {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            z-index: 9999 !important;
+            background: rgba(0, 0, 0, 0.5) !important;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-backdrop[style*="display: flex"] {
+            display: flex !important;
+        }
+
         /* Responsive */
         @media (min-width: 640px) {
             .bookings-btn-text {
