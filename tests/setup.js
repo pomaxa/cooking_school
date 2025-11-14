@@ -9,11 +9,11 @@ const path = require('path');
 // Use in-memory database for tests
 const TEST_DB_PATH = ':memory:';
 
-let testDb;
+// Initialize immediately, not in beforeAll
+const testDb = new sqlite3.Database(TEST_DB_PATH);
 
-// Initialize test database before all tests
+// Set up tables before all tests
 beforeAll(async () => {
-  testDb = new sqlite3.Database(TEST_DB_PATH);
 
   // Create tables
   await new Promise((resolve, reject) => {
