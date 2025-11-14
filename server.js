@@ -570,7 +570,8 @@ app.post('/api/cancel-booking', async (req, res) => {
 
         const booking = await bookingsDb.getById(bookingId);
 
-        if (!booking || booking.email !== email) {
+        // Case-insensitive email comparison (emails should not be case-sensitive)
+        if (!booking || booking.email.toLowerCase() !== email.toLowerCase()) {
             return res.status(404).json({ error: 'Booking not found' });
         }
 
@@ -593,9 +594,12 @@ app.post('/api/cancel-booking', async (req, res) => {
         }
 
         // Возврат средств
+        // CRITICAL FIX: Refund only the amount that was actually paid (paidAmount),
+        // not the total price. For partial payments (10% deposit), this prevents
+        // refunding 100% when only 10% was paid.
         const refund = await stripe.refunds.create({
             payment_intent: booking.paymentIntentId,
-            amount: booking.totalPrice * 100, // в центах
+            amount: Math.round(booking.paidAmount * 100), // в центах - только оплаченная сумма
         });
 
         // Обновить статус бронирования
